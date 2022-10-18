@@ -21,6 +21,7 @@ function App() {
     const [events, setEvents] = useState<EventT[]>([]);
     const [cartEvents, setCartEvents] = useState<EventT[]>([]);
     const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+    const [searchInput, setSearchInput] = useState<string>("");
 
     useEffect(() => {
         fetch("https://tlv-events-app.herokuapp.com/events/uk/london")
@@ -37,37 +38,52 @@ function App() {
 
     const removeEventFromCart = (item: EventT) => {
         const cartEventsCopy = cartEvents;
-        console.log("cartEventsCopy", cartEventsCopy);
+        setEvents([...events, cartEventsCopy![cartEventsCopy!.indexOf(item)]]);
         cartEventsCopy.splice(cartEventsCopy!.indexOf(item), 1);
         setCartEvents(cartEventsCopy);
-        // setEvents([...events, cartEvents![cartEvents!.indexOf(item)]]);
     };
 
     return (
         <div className="App">
             <Header
+                setSearchInput={setSearchInput}
                 setIsCartOpen={() => setIsCartOpen(!isCartOpen)}
                 cartEvents={cartEvents}
             />
+
             {isCartOpen && (
                 <Cart
                     removeEventFromCart={removeEventFromCart}
                     cartEvents={cartEvents}
                 />
             )}
+
             <section className="cards-container">
                 {events &&
-                    events.map((item: EventT) => (
-                        <Card
-                            addEventToCart={() => addEventToCart(item)}
-                            key={item._id}
-                            title={item.title}
-                            venue={item.venue}
-                            flyerFront={item.flyerFront}
-                            startTime={item.startTime}
-                            endTime={item.endTime}
-                        />
-                    ))}
+                    events
+                        .sort(function (a: EventT, b: EventT) {
+                            return a.date < b.date
+                                ? 1
+                                : a.date > b.date
+                                ? -1
+                                : 0;
+                        })
+                        .filter((item: EventT) =>
+                            item.title
+                                .toLowerCase()
+                                .includes(searchInput.toLowerCase())
+                        )
+                        .map((item: EventT) => (
+                            <Card
+                                addEventToCart={() => addEventToCart(item)}
+                                key={item._id}
+                                title={item.title}
+                                venue={item.venue}
+                                flyerFront={item.flyerFront}
+                                startTime={item.startTime}
+                                endTime={item.endTime}
+                            />
+                        ))}
             </section>
         </div>
     );
