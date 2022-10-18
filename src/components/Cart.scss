@@ -1,0 +1,36 @@
+.cart-container {
+    position: fixed;
+    right: 0;
+    top: 50px;
+    background-color: rgb(100, 203, 237);
+    width: 11vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: scroll;
+
+    .item-container {
+        margin-bottom: 2rem;
+
+        img {
+            margin-top: 0.2rem;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+    }
+
+    span {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .remove-btn {
+            cursor: pointer;
+            margin-left: 1rem;
+            width: 32px;
+            height: 32px;
+        }
+    }
+}
