@@ -6,15 +6,14 @@ interface Props {
     cartEvents: EventT[];
     setIsCartOpen: () => void;
     setSearchInput: (searchInput: string) => void;
-
-    // removeEventFromCart: () => void;
 }
 
 function Header({ cartEvents, setIsCartOpen, setSearchInput }: Props) {
     return (
         <header>
             <input
-                type="search"
+                type="text"
+                placeholder="Search..."
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSearchInput(e.target.value)
                 }

@@ -1,6 +1,7 @@
 header {
     position: fixed;
     padding: 0 1rem;
+    z-index: 2;
     top: 0;
     left: 0;
     right: 0;
@@ -9,6 +10,24 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    input {
+        color: white;
+        padding: 8px 12px;
+        width: 150px;
+        background: rgb(20, 21, 29);
+        border-radius: 20px;
+        border: none;
+
+        &:focus {
+            outline: none;
+        }
+
+        &::placeholder {
+            padding: 5px;
+            color: white;
+        }
+    }
 }
 
 .cart-btn-container {
