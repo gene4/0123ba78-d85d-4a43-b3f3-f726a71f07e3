@@ -1,6 +1,7 @@
 import "./Card.scss";
 import stockEventImage from "../assets/stock-event-image.jpeg";
 import moment from "moment";
+import { motion } from "framer-motion";
 
 interface Props {
     title: string;
@@ -23,7 +24,7 @@ function Card({
     addEventToCart,
 }: Props) {
     return (
-        <div className="card">
+        <motion.div layout className="card">
             {
                 <img
                     alt={title}
@@ -49,7 +50,7 @@ function Card({
                     Add event
                 </button>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

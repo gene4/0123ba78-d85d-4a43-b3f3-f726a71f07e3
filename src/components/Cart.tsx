@@ -2,6 +2,7 @@ import React from "react";
 import { EventT } from "../App";
 import stockEventImage from "../assets/stock-event-image.jpeg";
 import "./Cart.scss";
+import { motion } from "framer-motion";
 
 interface Props {
     cartEvents: EventT[];
@@ -10,10 +11,17 @@ interface Props {
 
 function Cart({ cartEvents, removeEventFromCart }: Props) {
     return (
-        <div className="cart-container">
-            {cartEvents &&
+        <motion.div
+            initial={{ x: 200 }}
+            animate={{ x: 0 }}
+            exit={{ x: 400 }}
+            transition={{ ease: "easeOut", duration: 0.5 }}
+            layout
+            className="cart-container"
+        >
+            {cartEvents.length > 0 ? (
                 cartEvents.map((item: EventT) => (
-                    <div className="item-container">
+                    <div className="item-container" key={item._id}>
                         <p>{item.title}</p>
                         <span>
                             <img
@@ -32,8 +40,11 @@ function Cart({ cartEvents, removeEventFromCart }: Props) {
                             />
                         </span>
                     </div>
-                ))}
-        </div>
+                ))
+            ) : (
+                <h2>There are no events in your cart!</h2>
+            )}
+        </motion.div>
     );
 }
 
