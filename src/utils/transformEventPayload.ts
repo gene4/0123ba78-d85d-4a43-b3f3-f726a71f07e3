@@ -1,4 +1,4 @@
-import { EventsDataT, EventT } from "./types";
+import { EventsDataT, EventT } from "../../types";
 
 export const transformEventPayload = (data: any) => {
     const groupedData: EventsDataT = data.reduce(
@@ -12,6 +12,5 @@ export const transformEventPayload = (data: any) => {
         []
     );
 
-    // return Object.values(groupedData);
     return groupedData;
 };
