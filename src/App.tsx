@@ -1,90 +1,78 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.scss";
 import Card from "./components/Card";
 import Cart from "./components/Cart";
 import Header from "./components/Header";
 import moment from "moment";
 import { motion, AnimatePresence } from "framer-motion";
-
-export type EventT = {
-    _id: string;
-    title: string;
-    flyerFront?: string;
-    venue: {
-        name: string;
-        direction: string;
-    };
-    startTime: string;
-    endTime: string;
-    date: string;
-};
+import { API_URL } from "./utils/api";
+import { EventsDataT, EventT } from "./utils/types";
+import { transformEventPayload } from "./utils/transformEventPayload";
 
 function App() {
-    const [events, setEvents] = useState<EventT[][]>([]);
+    const [events, setEvents] = useState<EventsDataT>();
     const [cartEvents, setCartEvents] = useState<EventT[]>([]);
     const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>("");
 
-    useEffect(() => {
-        fetch("https://tlv-events-app.herokuapp.com/events/uk/london")
+    const fetchEvents = useCallback(() => {
+        fetch(API_URL)
             .then((response) => response.json())
-            .then((data) => {
-                const groupedData = data.reduce(
-                    (
-                        reducer: { [key: string]: EventT[] },
-                        accumulator: EventT
-                    ) => {
-                        reducer[accumulator.date] = [
-                            ...(reducer[accumulator.date] || []),
-                            accumulator,
-                        ];
-                        return reducer;
-                    },
-                    []
-                );
-
-                setEvents(Object.values(groupedData));
-            });
+            .then((data) => setEvents(transformEventPayload(data)));
     }, []);
 
-    const addEventToCart = (item: EventT) => {
-        setCartEvents([...cartEvents, item]);
+    useEffect(() => {
+        fetchEvents();
+    }, []);
 
-        const eventsCopy = events.map((group) => {
-            if (group[0].date === item.date) {
-                group.splice(group.indexOf(item), 1);
-                return group;
-            }
-            return group;
-        });
+    const addEventToCart = useCallback(
+        (item: EventT) => {
+            setCartEvents([...cartEvents, item]);
 
-        setEvents(eventsCopy);
-    };
+            if (!events) return;
 
-    const removeEventFromCart = (item: EventT) => {
-        const cartEventsCopy = cartEvents;
-        cartEventsCopy.splice(cartEventsCopy!.indexOf(item), 1);
-        setCartEvents(cartEventsCopy);
+            const eventsCopy = events;
+            eventsCopy[item.date].splice(
+                eventsCopy[item.date].indexOf(item),
+                1
+            );
+            setEvents(eventsCopy);
+        },
+        [cartEvents, events]
+    );
 
-        const eventsCopy = events.map((group: EventT[]) => {
-            if (group.length > 0 && group[0].date === item.date) {
-                return [...group, item];
+    const removeEventFromCart = useCallback(
+        (item: EventT) => {
+            const cartEventsCopy = [...cartEvents];
+            cartEventsCopy.splice(cartEventsCopy!.indexOf(item), 1);
+            setCartEvents(cartEventsCopy);
+
+            if (!events) return;
+            const eventsCopy = events;
+            if (eventsCopy[item.date]) {
+                eventsCopy[item.date].push(item);
             } else {
-                return group;
+                eventsCopy[item.date] = [item];
             }
-            // return group;
-        });
-        setEvents(eventsCopy);
-    };
 
-    const filteredEvents = useCallback(() => {
-        const filterGroup = events.map((group: EventT[]) => {
-            return group.filter((item: EventT) =>
+            setEvents(eventsCopy);
+        },
+        [events, cartEvents]
+    );
+
+    const filteredEvents = useMemo(() => {
+        if (!events) return;
+        const filterGroup = Object.entries(events);
+
+        filterGroup.map(([date, eventsByDate]) => {
+            eventsByDate.filter((item: EventT) =>
                 item.title.toLowerCase().includes(searchInput.toLowerCase())
             );
+
+            return [date, eventsByDate];
         });
 
-        return filterGroup.filter((array: [] | EventT[]) => array.length > 0);
+        return filterGroup;
     }, [events, searchInput]);
 
     return (
@@ -104,56 +92,46 @@ function App() {
             </AnimatePresence>
             <section>
                 {events &&
-                    filteredEvents()
-                        .sort(function (a: EventT[], b: EventT[]) {
-                            return a[0].date < b[0].date
-                                ? -1
-                                : a[0].date > b[0].date
-                                ? 1
-                                : 0;
-                        })
-                        .map(
-                            (group: EventT[]) =>
-                                group.length > 0 && (
-                                    <div
-                                        key={group[0]._id}
-                                        className="group-container"
-                                    >
-                                        <div className="date-container">
-                                            <p>
-                                                {moment(group[0].date).format(
-                                                    "MMMM Do YYYY"
-                                                )}
-                                            </p>
-                                        </div>
-                                        <motion.div
-                                            layout
-                                            className="cards-container"
-                                        >
-                                            {group.map((item: EventT) => (
-                                                <Card
-                                                    addEventToCart={() =>
-                                                        addEventToCart(item)
-                                                    }
-                                                    key={item._id}
-                                                    title={item.title}
-                                                    venue={item.venue}
-                                                    flyerFront={item.flyerFront}
-                                                    startTime={item.startTime}
-                                                    endTime={item.endTime}
-                                                />
-                                            ))}
-                                        </motion.div>
-                                    </div>
-                                )
-                        )}
+                    // filteredEvents()
+                    filteredEvents!
+                        // Object.entries(events)
+                        .filter((item) => item[1].length > 0)
+                        .sort(
+                            (a: [string, EventT[]], b: [string, EventT[]]) => {
+                                return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
+                            }
+                        )
+                        .map(([date, eventsByDate]) => (
+                            <div key={date} className="group-container">
+                                <div className="date-container">
+                                    (
+                                    <p>{moment(date).format("MMMM Do YYYY")}</p>
+                                    )
+                                </div>
+                                <motion.div layout className="cards-container">
+                                    {eventsByDate.map((item: EventT) => (
+                                        <Card
+                                            addEventToCart={() =>
+                                                addEventToCart(item)
+                                            }
+                                            key={item._id}
+                                            title={item.title}
+                                            venue={item.venue}
+                                            flyerFront={item.flyerFront}
+                                            startTime={item.startTime}
+                                            endTime={item.endTime}
+                                        />
+                                    ))}
+                                </motion.div>
+                            </div>
+                        ))}
             </section>
 
-            {filteredEvents().length === 0 && searchInput !== "" && (
+            {/* {filteredEvents().length === 0 && searchInput !== "" && (
                 <div className="not-found">
                     <h2>No events were found ☹︎</h2>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { EventT } from "../App";
+import { EventT } from "../utils/types";
 import "./Header.scss";
 
 interface Props {

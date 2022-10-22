@@ -1,8 +1,8 @@
 import React from "react";
-import { EventT } from "../App";
 import stockEventImage from "../assets/stock-event-image.jpeg";
 import "./Cart.scss";
 import { motion } from "framer-motion";
+import { EventT } from "../utils/types";
 
 interface Props {
     cartEvents: EventT[];
