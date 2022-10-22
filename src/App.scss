@@ -7,25 +7,6 @@ a {
     padding: 3rem;
 }
 
-.date-container {
-    position: sticky;
-    top: 50px;
-    height: 35px;
-    z-index: 1;
-    padding-left: 1rem;
-    display: flex;
-    align-items: center;
-    font-size: 1.2rem;
-    justify-content: center;
-    border-radius: 15px;
-    backdrop-filter: blur(20px);
-    background-color: rgba(226, 251, 255, 0.6);
-
-    p {
-        margin: 0;
-    }
-}
-
 .cards-container {
     padding: 2rem 0;
     width: 100%;
