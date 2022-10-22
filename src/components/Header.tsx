@@ -1,14 +1,14 @@
 import React from "react";
-import { EventT } from "../utils/types";
+import { EventT } from "../../types";
 import "./Header.scss";
 
 interface Props {
-    cartEvents: EventT[];
+    cartEventIds: EventT["_id"][];
     setIsCartOpen: () => void;
     setSearchInput: (searchInput: string) => void;
 }
 
-function Header({ cartEvents, setIsCartOpen, setSearchInput }: Props) {
+function Header({ cartEventIds, setIsCartOpen, setSearchInput }: Props) {
     return (
         <header>
             <input
@@ -20,7 +20,7 @@ function Header({ cartEvents, setIsCartOpen, setSearchInput }: Props) {
             />
             <div onClick={() => setIsCartOpen()} className="cart-btn-container">
                 <img alt="cart" src="./cart.svg" />
-                <p>{cartEvents.length}</p>
+                <p>{cartEventIds.length}</p>
             </div>
         </header>
     );
