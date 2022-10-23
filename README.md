@@ -1,4 +1,4 @@
-# Coding Task 0123ba78-d85d-4a43-b3f3-f726a71f07e3
+# Coding Task 0123ba78-d85d-4a43-b3f3-f726a71f07e3 💃💃💃
 
 A React app that renders music events from an API.
 
@@ -23,5 +23,3 @@ npm install
 ```
 npm start
 ```
-
-💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃
