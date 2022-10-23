@@ -2,8 +2,6 @@
 
 A React app that renders music events from an API.
 
-💃💃💃
-
 - Sorts and groups events by date.
 - Filters events by a search query. 
 - Add and remove events from your events cart.
@@ -26,3 +24,4 @@ npm install
 npm start
 ```
 
+💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃💃
