@@ -9,6 +9,7 @@ export type EventT = {
     startTime: string;
     endTime: string;
     date: string;
+    city: string;
 };
 
 export type EventsDataT = {
