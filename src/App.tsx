@@ -16,21 +16,34 @@ function App() {
     const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>("");
 
-    const fetchEvents = useCallback(() => {
-        fetch(API_URL)
-            .then((response) => response.json())
-            .then((data) => setOriginalEvents(data));
-    }, []);
-
     useEffect(() => {
+        const fetchEvents = () => {
+            fetch(API_URL)
+                .then((response) => response.json())
+                .then((data) => setOriginalEvents(data));
+        };
         fetchEvents();
     }, []);
-
     const events = useMemo(() => {
         // filter by search input
         // filter by cart inclusion
 
-        const filtered = originalEvents.filter((event: EventT) => {
+        const formatedAddress = (venueName: string, city: string) => {
+            const newAddress = `https://www.google.com/maps/dir//${venueName}+${city}`;
+            return newAddress;
+        };
+
+        const eventsWithFormatedAdress = originalEvents.map((event: EventT) => {
+            return {
+                ...event,
+                venue: {
+                    ...event.venue,
+                    direction: formatedAddress(event.venue.name, event.city),
+                },
+            };
+        });
+
+        const filtered = eventsWithFormatedAdress.filter((event: EventT) => {
             if (
                 (searchInput &&
                     !event.title
